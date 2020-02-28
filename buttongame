@@ -1,0 +1,118 @@
+// Tahsin Can Sarlak
+// Button Game
+
+// Gets the servo library
+#include <Servo.h>
+
+// Create 2 servo objects
+Servo myservo1; 
+Servo myservo2;  
+
+// The pins to control motor
+int mot1 = 2;
+int mot2 = 14;
+
+// The buttons
+int but1 = 15;
+int but2 = 4;
+
+// The LEDs
+int led1 = 13;
+int led2 = 5;
+
+// The positions of each servo
+int pos1 = 0;
+int pos2 = 160;
+
+// After someone wins, the game stops for this amount of ms
+int endingtime = 10000;
+
+void setup() {
+  // attaches the servos on to the servo objects
+  myservo1.attach(mot1);
+  myservo2.attach(mot2);    
+
+  // Outputs LEDs and motors
+  pinMode(mot1, OUTPUT);
+  pinMode(mot2, OUTPUT);
+  pinMode(led1, OUTPUT);
+  pinMode(led2, OUTPUT);
+
+  // Inputs to read the buttons
+  pinMode(but1, INPUT);
+  pinMode(but2, INPUT);
+
+  // Initializes the servos so that
+  // both servos point downwards to begin with
+  myservo1.write(pos1);
+  myservo2.write(pos2); 
+}
+
+void loop() {
+  // Moves the motors downward constantly
+  moving();
+  // Reads if some has pushed a button and moves up the motor
+  buttons();
+
+  // Checks if someone has won and turn on the necessary LEDs
+  lights1();
+  lights2();  
+}
+
+// Moves the motor downward constantly 
+// until someone reaches a certain degree
+void moving(){
+  // Moves the first motor downward by 1 degree in 10 ms
+  if( pos1>0){
+   myservo1.write(pos1);
+   pos1--;
+   delay(10);
+  }
+
+  // Moves the first motor downward by 1 degree in 10 ms
+  if( pos2 < 160){
+   myservo2.write(pos2);
+   pos2++;
+   delay(10);
+  }  
+}
+
+// Checks if someone has pushed a button
+void buttons(){
+  // Moves a motor up by 3 degrees 
+  if(digitalRead(but1) == HIGH){
+        myservo1.write(pos1);
+        pos1 = pos1 + 3;      
+    }
+    if(digitalRead(but2) == HIGH){
+        myservo2.write(pos2);
+        pos2 = pos2 - 3;         
+    }
+}
+
+// If Player1 has reached the desired position, 
+// it turns the LEDs on Player1's side.
+// And it keeps turned on for endingtime
+void lights1(){
+  if( pos1 > 120){
+    digitalWrite(led1,HIGH);
+    delay(endingtime);
+    digitalWrite(led1,LOW);
+    myservo1.write(0);
+    myservo2.write(160);
+  }
+}
+
+
+// If Player2 has reached the desired position, 
+// it turns the LEDs on Player2's side
+// And it keeps turned on for endingtime
+void lights2(){
+  if( pos2 < 20){
+    digitalWrite(led2,HIGH);
+    delay(endingtime);
+    digitalWrite(led2,LOW);
+    myservo1.write(0);
+    myservo2.write(160);
+  }
+}
